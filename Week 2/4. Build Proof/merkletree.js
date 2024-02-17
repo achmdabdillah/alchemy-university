@@ -4,11 +4,11 @@ class MerkleTree {
     this.concat = concat;
   }
   getRoot() {
-    let arr = [...this.leaves];
-    while (arr.length != 1) {
+    let arr = this.leaves;
+    while (arr.length > 1) {
       arr = this.getNextLayer(arr);
     }
-    return arr[0];
+    return arr;
   }
 
   getNextLayer(arr) {
@@ -16,7 +16,7 @@ class MerkleTree {
     for (let i = 0; i < arr.length; i++) {
       if (i % 2 !== 0) {
         newArr.push(this.concat(arr[i - 1], arr[i]));
-      } else if (i === arr.length - 1) {
+      } else if (i == arr.length - 1) {
         newArr.push(arr[i]);
       }
     }
@@ -25,18 +25,15 @@ class MerkleTree {
 
   getProof(index) {
     let proof = [];
-    let arr = [...this.leaves];
-    while (arr.length != 1) {
-      if (index % 2 === 0) {
-        if (index < arr.length - 1) {
-          proof.push({
-            data: arr[index + 1],
-            left: false,
-          });
-        }
-      } else {
-        console.log("masuk", index);
+    let arr = this.leaves;
+
+    while (arr.length > 1) {
+      if (index % 2 !== 0) {
         proof.push({ data: arr[index - 1], left: true });
+      } else {
+        if (index < arr.length - 1) {
+          proof.push({ data: arr[index + 1], left: false });
+        }
       }
 
       arr = this.getNextLayer(arr);
@@ -52,4 +49,4 @@ const leaves = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"];
 const merkleTree = new MerkleTree(leaves, concat);
 
 // merkleTree1.getRoot();
-console.log("mine", merkleTree.getProof(7));
+merkleTree.getProof(9);
